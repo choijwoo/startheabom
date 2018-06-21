@@ -1,0 +1,466 @@
+<body class="onoffmix bgMain" style="">
+<div class="skipNavi">
+	<a href="#content">본문 바로가기</a>
+</div>
+<div id="messagequeue"></div>
+<div id="dialogBox"></div>
+<script type="text/x-query-tmpl" id="tmpl-noneToday">
+	<ul class="todayEvent noneEvent">
+	<li></li>
+</ul>
+</script><script type="text/x-query-tmpl" id="tmpl-15headerSearch"><li class="recommendationSearch"><span class="bulSearch"></span><a href="${defaultLink}" target="_blank">${defaultComment}</a></li></script><script type="text/x-query-tmpl" id="tmpl-15header"><div class="headerBannerImg">
+  <div class="positionArea">
+    <p><a href="${defaultLink}" ${_data_c} target="_blank"><img src="${defaultImage}" alt="${defaultComment}" /></a></p>
+  </div>
+</div></script><script type="text/x-query-tmpl" id="tmpl-15mainTop"><li><a href="${defaultLink}" class="bannerImgArea" target="_blank"><img src="${defaultImage}" alt="${defaultComment}"/></a></li></script><script type="text/x-query-tmpl" id="tmpl-15mainTopRoller"><li>
+  <a href="${defaultLink}" target="_blank"><span class="positionArea"><span class="borderArea"></span><img src="${additionalImage}" alt="${defaultComment}" width="29" /></span>
+  <span class="textArea" title="${defaultComment}">${defaultComment}</span></a>
+</li></script><script type="text/x-query-tmpl" id="tmpl-15mainRank"><li class="last">
+  <a href="${defaultLink}">
+    <p class="positionArea">
+      <span class="number ad">AD</span>
+      <span class="borderArea"></span>
+      <img src="${defaultImage}" alt="${defaultComment}"/>
+      <span class="text">${defaultComment}</span>
+    </p>
+  </a>
+</li></script><script type="text/x-query-tmpl" id="tmpl-15mainSide"><li><a href="${defaultLink}" target="_blank"><img src="${defaultImage}" alt="${defaultComment}"/></a></li></script><script type="text/x-query-tmpl" id="tmpl-15mainToday"><ul class="todayEvent {{if isAttending}}event-flag-attending{{/if}} {{if isPinned}}event-flag-pinned{{/if}} ${cssClass}" _idx="${idx}">
+	<li class="eventThumbnail"><a href="${defaultLink}" target="_blank"><img src="${defaultImage}" alt="${defaultComment}" width="220" height="220" class="thumbnail" /></a></li>
+	<li class="eventTitle"><a href="${defaultLink}" class="eventLink" title="${defaultComment}" target="_blank">${defaultComment}</a></li>
+	<li class="eventBottomArea">
+		<ul>
+			<li class="eventPin"><a href="#pin"><span class="heart">찜</span></a><span class="pinNumber">${pinned}</span></li>
+
+		{{if _isOnline}}
+			{{if _isFuture}}{{! 모집 시작일이 미래인 경우 }}
+				<li class="eventPersonnel"><a href="${defaultLink}" class="eventButton" target="_blank">
+					<span>모집 {{html _remainTimeStart}}</span>
+					<span class="entered">모임상세보기</span>
+				</a></li>
+			{{else _isPast}}{{! 모집 종료일이 과거인 경우 }}
+				<li class="eventPersonnel"><span class="disable">신청 마감</span></li>
+			{{else isAttending}}{{! 이미 모임에 참여된 경우 }}
+				<li class="eventPersonnel"><a href="/rsvp/edit/${idx}" class="eventButton edit" target="_blank">참여정보 수정</a></li>
+			{{else _isRecruiting}}
+			{{if _isShowProgress}}{{! 신청가능 인원이 표시되는 경우 }}
+				{{if _remainsZero}}{{! '온오프믹스 접수' 로 모집중인 경우 (신청가능 인원이 0명) }}
+					<li class="eventPersonnel"><a href="/rsvp/attend/${idx}" class="eventButton" target="_blank">
+					  <span>정원 도달</span>
+					  <span class="entered">대기자등록</span>
+					</a></li>
+				{{else _remainsLT1000}}{{! '온오프믹스 접수' 로 모집중인 경우 (신청가능 인원이 999명 이하) }}
+					<li class="eventPersonnel"><a href="/rsvp/attend/${idx}" class="eventButton" target="_blank">
+					  <span><strong>${_remains}</strong>명 신청가능</span>
+					  <span class="entered">신청하기</span>
+					</a></li>
+				{{else _remainsGTE1000}}{{! '온오프믹스 접수' 로 모집중인 경우 (신청가능 인원이 1000명 이상) }}
+					<li class="eventPersonnel"><a href="/rsvp/attend/${idx}" class="eventButton" target="_blank">
+					  <span><strong>999+</strong>명 신청가능</span>
+					  <span class="entered">신청하기</span>
+					</a></li>
+				{{/if}}
+			{{else}}
+				{{if _remainsZero}}{{! '온오프믹스 접수' 로 모집중인 경우 (신청가능 인원이 0명) }}
+					<li class="eventPersonnel"><a href="/rsvp/attend/${idx}" class="eventButton" target="_blank">
+					  <span>정원 도달</span>
+					  <span class="entered">대기자등록</span>
+					</a></li>
+				{{else}}
+					<li class="eventPersonnel"><a href="/rsvp/attend/${idx}" class="eventButton" target="_blank">
+					  <span>신청가능</span>
+					  <span class="entered">신청하기</span>
+					</a></li>
+				{{/if}}
+			{{/if}}
+        {{/if}}
+    {{else _isOutsideAndField}}{{! '외부접수' 와 '현장접수' 가 동시선택된 모임인 경우 }}
+        <li class="eventPersonnel"><span class="disable">외부/현장 접수</span></li>
+    {{else _isOutside}}{{! '외부접수' 모임인 경우 }}
+        <li class="eventPersonnel"><span class="disable">외부 접수</span></li>
+    {{else _isField}}{{! '현장접수' 모임인 경우 }}
+        <li class="eventPersonnel"><span class="disable">현장 접수</span></li>
+    {{/if}}
+    </ul>
+  </li>
+  {{! FIXME }}
+  <li class="eventGraph">
+    <div class="eventGraphBar">
+      <div class="eventStandby" style="width:${_widthStandby}%">
+        <div class="eventAttend" style="width:${_widthAttend}%">
+        </div>
+      </div>
+    </div>
+  </li>
+</ul>
+</script><script type="text/x-query-tmpl" id="tmpl-15mainWing"><li>
+  <a href="${defaultLink}" target="_blank">
+    <p class="positionArea">
+      <span class="borderBox"></span>
+      <img src="${defaultImage}" alt="${defaultComment}" width="90" height="130">
+    </p>
+  </a>
+</li></script><script type="text/x-query-tmpl" id="tmpl-15mainBottom"><li>
+  <a href="${defaultLink}" target="_blank">
+    <p class="positionArea">
+      <span class="borderBox"></span>
+      <img src="${defaultImage}" width="460" height="100" alt="${defaultComment}" />
+    </p>
+  </a>
+</li></script><script type="text/x-query-tmpl" id="tmpl-15mainBranding"><li class="item">
+	<div class="imgArea">
+		<a href="${defaultLink}" target="_blank">
+		<span class="borderArea"></span>
+		<img src="${defaultImage}" width="216" height="125" /></a>
+	</div>
+	<p class="eventTitle"><a href="${defaultLink}" target="_blank">${defaultComment}</a></p>
+</li></script><script type="text/x-query-tmpl" id="tmpl-15mainFocus"><li><a href="${defaultLink}" target="_blank" title="${defaultComment}">
+	<span class="borderArea"></span>
+	<img src="${defaultImage}" alt="${defaultComment}" width="75" height="75" /></a></li>
+</script><script type="text/x-query-tmpl" id="tmpl-15mainRecommend"><li>
+	<div class="imgArea"><a href="${defaultLink}" target="_blank"><span class="borderArea"></span><img src="${defaultImage}" width="75" height="75"/></a></div>
+	<p class="eventTitle"><a href="${defaultLink}" target="_blank" title="${defaultComment}">${defaultComment}</a></p>
+	<span class="eventDate">${timespan}</span>
+	<span class="paymentType ${class_isFree}">${text_isFree}</span>
+</li>
+</script><script type="text/x-query-tmpl" id="tmpl-15eventMainSingle"></script><script type="text/x-query-tmpl" id="tmpl-15eventViewSide"><a class="eventLink" href='${defaultLink}' target='${defaultTarget}'>
+  <div class="photoBorder"><img src="${defaultImage}" width="234" border="0" alt="${defaultComment}"/></div>
+</a></script><script type="text/x-query-tmpl" id="tmpl-15eventViewBar"><div class="barBanner"><a href="${defaultLink}" target="${defaultTarget}"><img src="${defaultImage}" alt="${defaultComment}" width="664" /></a></div></script><script type="text/x-query-tmpl" id="tmpl-15eventViewAd"><a class="eventLink" href='${defaultLink}' target='${defaultTarget}'>
+  <div class="photoBorder"><img src="${defaultImage}" width="265" border="0" alt="${defaultComment}" /></div>
+</a></script><script type="text/x-query-tmpl" id="tmpl-15eventViewToast"><dl class="issue">
+  <dt class="banner">
+    <a href="${defaultLink}">
+      <img src="${defaultImage}"/>
+      <div class="bannerBorder"></div>
+    </a>
+  </dt>
+  <dd class="subject"><a title="${defaultComment}" href="${defaultLink}">${defaultComment}</a></dd>
+  <dd class="description">${additionalComment}</dd>
+</dl></script><script type="text/x-query-tmpl" id="tmpl-15mainService"><li><a href="${defaultLink}" class="placeLink" target="_blank"><img src="${defaultImage}" width="221" height="82" alt="${defaultComment}" /></a></li></script><script type="text/x-query-tmpl" id="tmpl-15eventCreateBefore"><p class="serviceBanner">
+  <a href="${defaultLink}" target="_blank"><img src="${defaultImage}" alt="${defaultComment}" /></a>
+</p>
+</script><script type="text/x-query-tmpl" id="tmpl-15eventCreateResult"><li class="${cssClass}"><a href="${defaultLink}" target="${defaultTarget}"><img src="${defaultImage}" alt="${defaultComment}" /></a></li></script><script type="text/x-query-tmpl" id="tmpl-15mainBranchEvent"><li>
+  <a href="${defaultLink}" target="_blank">
+    <p class="positionArea">
+      <span class="borderArea"></span>
+      <img src="${defaultImage}" alt="${defaultComment}"/>
+      <span class="title ellipsis">${defaultComment}</span>
+    </p>
+  </a>
+</li></script><script type="text/x-query-tmpl" id="tmpl-15mainBranchPlace"><li class="oneImg">
+  <a href="${defaultLink}" target="_blank">
+    <p class="positionArea">
+      <span class="borderArea"></span>
+      <img src="${defaultImage}" alt="${defaultComment}"/>
+      <span class="title ellipsis">${defaultComment}</span>
+      <span class="people ellipsis">{{html additionalComment}}</span>
+    </p>
+  </a>
+</li></script><script type="text/x-query-tmpl" id="tmpl-15mainBranchMarket"><li class="oneImg">
+  <a href="${defaultLink}" target="_blank">
+    <p class="positionArea">
+      <span class="borderArea"></span>
+      <img src="${defaultImage}" alt="${defaultComment}"/>
+      <span class="title ellipsis">${defaultComment}</span>
+      <span class="price ellipsis">{{html additionalComment}}</span>
+    </p>
+  </a>
+</li></script><script type="text/x-query-tmpl" id="tmpl-15eventViewToday"><dl class="issue ${cssClass}">
+  <dt class="banner">
+    <a href="${defaultLink}">
+      <img src="${defaultImage}" alt="${defaultComment} 대표이미지"/>
+      <div class="bannerBorder"></div>
+    </a>
+  </dt>
+  <dd class="subject"><a title="${defaultComment}" href="${defaultLink}"><span class="dot2x2">▪</span>${defaultComment}</a></dd>
+  <dd class="description">${additionalTimespan}</dd>
+</dl></script><script type="text/x-query-tmpl" id="tmpl-17mainHeader"><div class="headerBannerImg">
+  <div class="positionArea">
+    <p><a href="${defaultLink}" ${_data_c} target="_blank"><img src="${defaultImage}" alt="${defaultComment}" /></a></p>
+  </div>
+</div></script><script type="text/x-query-tmpl" id="tmpl-17mainWing"><li>
+  <a href="${defaultLink}" target="_blank">
+    <p class="positionArea">
+      <span class="borderBox"></span>
+      <img src="${defaultImage}" alt="${defaultComment}" width="90" height="130">
+    </p>
+  </a>
+</li></script>    <script type="text/javascript">
+      // $.tmpl(key, ...) 형태로 사용할 템플릿을 미리 컴파일
+      $(function() {
+        $.template && $.each( {"noneToday":"tmpl.noneToday.txt","15headerSearch":"tmpl.15headerSearch.txt","15header":"tmpl.15header.txt","15mainTop":"tmpl.15mainTop.txt","15mainTopRoller":"tmpl.15mainTopRoller.txt","15mainRank":"tmpl.15mainRank.txt","15mainSide":"tmpl.15mainSide.txt","15mainToday":"tmpl.15mainToday.txt","15mainWing":"tmpl.15mainWing.txt","15mainBottom":"tmpl.15mainBottom.txt","15mainBranding":"tmpl.15mainBranding.txt","15mainFocus":"tmpl.15mainFocus.txt","15mainRecommend":"tmpl.15mainRecommend.txt","15eventMainSingle":"tmpl.15eventMainSingle.txt","15eventViewSide":"tmpl.15eventViewSide.txt","15eventViewBar":"tmpl.15eventViewBar.txt","15eventViewAd":"tmpl.15eventViewAd.txt","15eventViewToast":"tmpl.15eventViewToast.txt","15mainService":"tmpl.15mainService.txt","15eventCreateBefore":"tmpl.15eventCreateBefore.txt","15eventCreateResult":"tmpl.15eventCreateResult.txt","15mainBranchEvent":"tmpl.15mainBranchEvent.txt","15mainBranchPlace":"tmpl.15mainBranchPlace.txt","15mainBranchMarket":"tmpl.15mainBranchMarket.txt","15eventViewToday":"tmpl.15eventViewToday.txt","17mainHeader":"tmpl.15header.txt","17mainWing":"tmpl.15mainWing.txt"}, function(key,val) {
+          var id='#tmpl-'+key;
+          $.template(key, $(id));
+        });
+      });
+    </script>
+      <script type="text/javascript">
+    // 모임정보가 출력된 페이지의 공통 스크립트
+    $(function() {
+            // 찜 클릭시 로그인 유도
+      $(document).on('click', '.todayEvent .eventBottomArea .eventPin a', function(event) {
+        event.preventDefault();
+        if (confirm('로그인 후에 사용할 수 있는 기능입니다.\n로그인하시겠습니까?')) {
+          location.href=url_login;
+        }
+      });
+          });
+  </script>
+  	<!--[if lte IE 7]>
+	<table class="header">
+		<thead>
+		<tr class="ie6">
+			<td class="left"></td>
+			<td class="header-body">
+				<div class="wrap">
+					<p>
+						<span>현재 보안에 취약한 구버전의 브라우저를 사용중입니다.</span><br />
+						악성코드 및 개정정보 노출로부터 컴퓨터를 안전하게 보호하고<br />
+						원활한 사이트 이용을 위해 최신버전의 브라우저로 업그레이드 하세요
+						<a class="upgrade" target="_blank" href="http://windows.microsoft.com/ko-KR/internet-explorer/download-ie" title="업그레이드 하기">업그레이드 하기</a>
+					</p>
+					<a class="close" href="#close" title="닫기">닫기</a>
+				</div>
+			</td>
+			<td class="right"></td>
+		</tr>
+		</thead>
+	</table>
+	<![endif]-->
+	<div id="header">
+	<div class="headerArea">
+		<div class="gnbMenu">
+			<ul class="serviceMenu">
+												<li class="btnMypage"><a href="/account/mypage"><span class="menuMypage">마이페이지</span></a></li>
+				<li><a href="/service/">서비스안내</a></li>
+				<li class="last"><a href="/cs/"><span class="menuCustomercenter">고객센터</span></a></li>
+			</ul>
+		</div>
+				<div class="layerDetailMypage" style="left: 783.781px; margin: 0px; display: none;">
+			<ul>
+									<li><a href="/account/edit">회원정보수정</a></li>
+					<li><a href="/account/pass">비밀번호변경</a></li>
+					<li><a href="/account/event">신청내역</a></li>
+					<li><a href="/account/payment">결제내역</a></li>
+							</ul>
+		</div>
+		<div class="logoSearchArea">
+			<h1>
+								<a href="/">
+					<img src="https://static.onoffmix.com/images3/global/logoOnoffmix.gif" alt="ONOFFMIX">
+				</a>
+							</h1>
+			<fieldset>
+				<legend>검색영역</legend>
+				<ul class="searchArea">
+					<li>
+						<div>
+							<form name="globalSearchForm" action="https://search.onoffmix.com/event" method="GET" origaction="https://search.onoffmix.com/event" origtarget="">
+								<input type="text" id="searchInput" title="키워드로 모임을 검색하세요" name="s" accesskey="s" class="default">
+								<input type="submit" class="btnSearch" value="검색">
+							</form>
+						</div>
+					</li>
+				</ul>
+			</fieldset>
+			<script type="text/x-jquery-tmpl" class="searchTemplate">
+				<li class='ui-menu-item'>
+					<p>
+						<span class="img">
+							<a href="${url}">
+								<span class="positionArea">
+									<span class="borderArea"></span>
+									<img src="${thumbnail}" width="68" alt="" />
+								</span>
+							</a>
+						</span>
+						<span class="title"><a href="${url}">${title}</a></span>
+						<span class="date">${data}</span>
+					</p>
+				<li>
+				</script>
+			<script type="text/x-jquery-tmpl" class="searchMoreTemplate">
+					<li class='ui-menu-item last'>
+						<p class="searchMoreArea">
+							<span><a href="https://search.onoffmix.com/event?s=${s}">검색결과 더보기</a></span>
+						</p>
+					<li>
+				</script>
+			<div class="headerBannerImg">
+  <div class="positionArea">
+    <p><a href="https://onoffmix.com/cs/a/33813?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140808" data-c="f7ae469a" target="_blank"><img src="https://cfile1.onoffmix.com/attach/xFUj7dcCF84d7cnJyvkOPGKLP5N1cBZm" alt="[서평이벤트] &quot;말 한마디 때문에&quot;"></a></p>
+  </div>
+</div>		</div>
+		<div class="gnbBottomMenu">
+			<ul class="siteMenu">
+				<li class="menuArea">
+					<div class="menuLayer selected">
+						<i class="iconEvent menuLayer"></i>
+						모임
+					</div>
+				</li>
+				<li><a href="/place">플레이스</a></li>
+			</ul>
+			<ul class="userInfoMenu">
+
+									<li class="first">다양한 모임을 경험해 보세요</li>
+					<li><a href="https://onoffmix.com/account/login">로그인</a></li>
+					<li><a href="https://onoffmix.com/account/join">회원가입</a></li>
+				
+			</ul>
+		</div>
+		<div class="layerServiceNavigation" data-role="event" style="display: block;">
+			<div class="linkCategory">
+				<ul class="categoryTab">
+					<li class="first">카테고리</li>
+
+					<li>
+						<a href="https://search.onoffmix.com/event?c=85">교육</a><br>
+						<a href="https://search.onoffmix.com/event?c=86">강연</a><br>
+						<a href="https://search.onoffmix.com/event?c=87">세미나/컨퍼런스</a><br>
+						<a href="https://search.onoffmix.com/event?c=88">문화/예술</a>
+					</li>
+
+					<li>
+						<a href="https://search.onoffmix.com/event?c=89">방송/연예</a><br>
+						<a href="https://search.onoffmix.com/event?c=90">취미활동</a><br>
+						<a href="https://search.onoffmix.com/event?c=91">소모임/친목행사</a><br>
+						<a href="https://search.onoffmix.com/event?c=92">공모전</a>
+					</li>
+
+					<li>
+						<a href="https://search.onoffmix.com/event?c=93">전시/박람회</a><br>
+						<a href="https://search.onoffmix.com/event?c=94">패션/뷰티</a><br>
+						<a href="https://search.onoffmix.com/event?c=95">이벤트/파티</a><br>
+						<a href="https://search.onoffmix.com/event?c=97">여행</a>
+					</li>
+
+					<li>
+						<a href="https://search.onoffmix.com/event?c=23">후원금 모금</a><br>
+						<a href="https://search.onoffmix.com/event?c=96">기타</a>
+					</li>
+				</ul>
+			</div>
+			<div class="linkAliress">
+				<ul class="areaTab">
+					<li class="first">지역</li>
+					<li>
+						<a href="https://search.onoffmix.com/event?region=02">서울</a><br>
+						<a href="https://search.onoffmix.com/event?region=051,052,054">부산/울산/경남</a><br>
+						<a href="https://search.onoffmix.com/event?region=032,031">인천/경기</a>
+					</li>
+					<li>
+						<a href="https://search.onoffmix.com/event?region=042,043,041,044">대전/충청/세종</a><br>
+						<a href="https://search.onoffmix.com/event?region=062,063,061">광주/전라</a><br>
+						<a href="https://search.onoffmix.com/event?region=033">강원</a>
+					</li>
+					<li>
+						<a href="https://search.onoffmix.com/event?region=053,055">대구/경북</a><br>
+						<a href="https://search.onoffmix.com/event?region=064">제주</a><br>
+						<a href="https://search.onoffmix.com/event?region=00">기타지역</a>
+					</li>
+				</ul>
+			</div>
+			<div class="linkDate">
+				<ul class="dateTab">
+					<li class="first">요일/시간</li>
+					<li>
+						<a href="https://search.onoffmix.com/event?timespan=6-11">오전</a><br>
+						<a href="https://search.onoffmix.com/event?timespan=12-17">오후</a>
+					</li>
+
+					<li>
+						<a href="https://search.onoffmix.com/event?timespan=18-23">저녁</a><br>
+						<a href="https://search.onoffmix.com/event?timespan=0-5">새벽</a>
+					</li>
+
+					<li>
+						<a href="https://search.onoffmix.com/event?weekday=0,1,2,3,4">주중</a><br>
+						<a href="https://search.onoffmix.com/event?weekday=5,6">주말</a>
+					</li>
+				</ul>
+			</div>
+			<div class="btnMoreArea">
+				<p>
+					<a href="https://search.onoffmix.com/event" class="eventView">전체 모임 보기</a>
+					<span href="#" class="close">close</span>
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+<section class="content main"><header class="mainWrap"><div class="topBannerSkinArea"><ul class="leftBanner"><li class="firstList" style="background-position:right top;background-repeat:repeat-x;background-color:#26093a;"></li><li style="background-position:right top;background-repeat:repeat-x;background-color:#ffffff;" class=""></li><li style="background-position:right top;background-repeat:repeat-x;background-color:#cdedf7;" class=""></li><li style="background-position:right top;background-repeat:repeat-x;background-color:#ffffff;" class=""></li><li style="background-position:right top;background-repeat:repeat-x;background-color:#393332;" class=""></li><li style="background-position:right top;background-repeat:repeat-x;background-color:#27aae1;" class=""></li><li style="background-position:right top;background-repeat:repeat-x;background-color:#100d0d;" class="noneBorder"></li><li style="background-position:right top;background-repeat:repeat-x;background-color:#fbf3e5;" class="selected"></li><li class="lastList" style="background-position:right top;background-repeat:repeat-x;background-color:#161d3f;"></li></ul><ul class="rightBanner"><li class="firstList" style="background-position:left top;background-repeat:repeat-x;background-color:#26093a;"></li><li style="background-position:left top;background-repeat:repeat-x;background-color:#ffffff;" class=""></li><li style="background-position:left top;background-repeat:repeat-x;background-color:#cdedf7;" class=""></li><li style="background-position:left top;background-repeat:repeat-x;background-color:#ffffff;" class=""></li><li style="background-position:left top;background-repeat:repeat-x;background-color:#393332;" class=""></li><li style="background-position:left top;background-repeat:repeat-x;background-color:#27aae1;" class=""></li><li style="background-position:left top;background-repeat:repeat-x;background-color:#100d0d;" class="noneBorder"></li><li style="background-position:left top;background-repeat:repeat-x;background-color:#fbf3e5;" class="selected"></li><li class="lastList" style="background-position:left top;background-repeat:repeat-x;background-color:#222b5a;"></li></ul></div><div class="topBannerArea"><span class="borderArea"></span><div class="centerBanner"><ul class="topBannerImgArea"><li style="background-image:url(https://cfile1.onoffmix.com/attach/e23XWamLMd8znMVvgsyEMBl4crhDYsDb);background-color:#26093a;" class="firstList"><a href="https://onoffmix.com/cs/a/33390?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F136600" data-c="9db3fb7e1" target="_blank"></a></li><li style="background-image:url(https://cfile1.onoffmix.com/attach/ZD3WUSETOdfBQ8UBTUga2tM4z1YGOphD);background-color:#ffffff;" class=""><a href="https://onoffmix.com/cs/a/33726?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140576" data-c="9db3fb7e2" target="_blank"></a></li><li style="background-image:url(https://cfile1.onoffmix.com/attach/ZeciU96AcjH7VJa0kOEe7b9rvwWDugJA);background-color:#cdedf7;" class=""><a href="https://onoffmix.com/cs/a/33794?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141056" data-c="9db3fb7e3" target="_blank"></a></li><li style="background-image:url(https://cfile1.onoffmix.com/attach/pkkBUzgrBHyVATgjn2JVgoWCHHS2SeEE);background-color:#ffffff;" class=""><a href="https://onoffmix.com/cs/a/33846?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141518" data-c="9db3fb7e4" target="_blank"></a></li><li style="background-image:url(https://cfile1.onoffmix.com/attach/WNNiyb82QwhLpc3QVUOwwcPI7xPIimIL);background-color:#393332;" class=""><a href="https://onoffmix.com/cs/a/33512?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140111" data-c="9db3fb7e5" target="_blank"></a></li><li style="background-image:url(https://cfile1.onoffmix.com/attach/vFMwtGLtNduZgbBIQeplEzXYIlUVBuN5);background-color:#27aae1;" class=""><a href="https://onoffmix.com/cs/a/33848?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141360" data-c="9db3fb7e6" target="_blank"></a></li><li style="background-image:url(https://cfile1.onoffmix.com/attach/fJl8ldxLrZ9nCRbueAOjr9BRpwx5pdPr);background-color:#100d0d;" class="noneBorder"><a href="https://onoffmix.com/cs/a/33851?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140821" data-c="9db3fb7e7" target="_blank"></a></li><li style="background-image:url(https://cfile1.onoffmix.com/attach/iqO3YAKsgGph5uJxstppnd65IImokwMh);background-color:#fbf3e5;" class="selected"><a href="https://onoffmix.com/cs/a/30503?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F130036" data-c="9db3fb7e8" target="_blank"></a></li><li style="background-image:url(https://cfile1.onoffmix.com/attach/AyiTR5BhwV93bCsL1iIb47cTyi5JArUp);background-color:#161d3f;" class="lastList"><a href="https://onoffmix.com/cs/a/32927?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F136937" data-c="9db3fb7e9" target="_blank"></a></li></ul><ul class="topBannerEventArea webFontDotum"><li class="firstList"><a href="https://onoffmix.com/cs/a/33390?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F136600" data-c="9db3fb7e1" target="_blank">2018 블록체인 오픈 포럼</a></li><li class=""><a href="https://onoffmix.com/cs/a/33726?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140576" data-c="9db3fb7e2" target="_blank">2018년 산업단지 공유경제 활성화 지원 2차 모집공고</a></li><li class=""><a href="https://onoffmix.com/cs/a/33794?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141056" data-c="9db3fb7e3" target="_blank">2018 외국인관광 도시민박업 및 한옥체험업 제2회 아카데미</a></li><li class=""><a href="https://onoffmix.com/cs/a/33846?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141518" data-c="9db3fb7e4" target="_blank">2018 DMC 이노베이션캠프 참가자 모집</a></li><li class=""><a href="https://onoffmix.com/cs/a/33512?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140111" data-c="9db3fb7e5" target="_blank">2018 성남 인디게임&amp;게이미피케이션 공모전 지원작 모집</a></li><li class=""><a href="https://onoffmix.com/cs/a/33848?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141360" data-c="9db3fb7e6" target="_blank">CultureNEXT1. OPEN FORUM &lt;문화기술, 상상을 현실로 만들어내다&gt;</a></li><li class="noneBorder"><a href="https://onoffmix.com/cs/a/33851?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140821" data-c="9db3fb7e7" target="_blank">글로벌 블록체인 산업 컨퍼런스 '체이너스 2018'</a></li><li class="selected"><a href="https://onoffmix.com/cs/a/30503?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F130036" data-c="9db3fb7e8" target="_blank">국내 최대 리테일 &amp; 이커머스 쇼, K SHOP 2018!</a></li><li class="lastList"><a href="https://onoffmix.com/cs/a/32927?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F136937" data-c="9db3fb7e9" target="_blank">서울시 투자유치 세미나 참가자 모집</a></li></ul></div></div></header><section class="topSection"><article><div class="brandingArea owl-carousel owl-theme owl-center owl-loaded"><div class="owl-stage-outer"><div class="owl-stage" style="transition: 0s; width: 3294px; transform: translate3d(-732px, 0px, 0px);"><div class="owl-item cloned" style="width: 356px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/28980?url=https%3A%2F%2Fwww.facebook.com%2Fonoffmix" data-c="777143e64" target="_blank"><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/vSQbmixmDThrnhU4w0dnvpXumbKXJuER" alt="온오프믹스 페이지 좋아요 누르러 가즈아~!"><p>온오프믹스 페이지 좋아요 누르러 가즈아~!</p></a></div></div><div class="owl-item cloned" style="width: 356px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/23201?url=https%3A%2F%2Fgoo.gl%2F6xAmY5" data-c="777143e65" target="_blank"><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/OhMRuhG3uJHJVfYwS7bto9FAcYeajOW0" alt="온오프믹스 [유튜브] 채널입니다~!! #좋아요 #구독 "><p>온오프믹스 [유튜브] 채널입니다~!! #좋아요 #구독 </p></a></div></div><div class="owl-item active center" style="width: 356px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/34044?url=https%3A%2F%2Fblog.naver.com%2Fonoffmix%2F221301565171" data-c="777143e61" target="_blank"><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/A2TqGH1Yz8mnxGwBZcEDOzYTA7MONf6p" alt="[ 6터뷰 ] #6하원칙을 #60초 안에 S`Camp편"><p>[ 6터뷰 ] #6하원칙을 #60초 안에 S`Camp편</p></a></div></div><div class="owl-item" style="width: 356px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33140?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F138026" data-c="777143e62" target="_blank"><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/gh6kbBW6IuaEuvJdLIKeK9LgmO68R4nF" alt="모임 활성화를 위한 '마팀이 간다 시즌2' OPEN!"><p>모임 활성화를 위한 '마팀이 간다 시즌2' OPEN!</p></a></div></div><div class="owl-item" style="width: 356px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/20269?url=http%3A%2F%2Fblog.naver.com%2Fonoffmix%2F220980288434" data-c="777143e63" target="_blank"><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/Yi8OqpXTPx1jNYvuAysAo8NEqNAV4eTd" alt="이런 모임 저런 모임 누구나 개설하기 팁"><p>이런 모임 저런 모임 누구나 개설하기 팁</p></a></div></div><div class="owl-item" style="width: 356px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/28980?url=https%3A%2F%2Fwww.facebook.com%2Fonoffmix" data-c="777143e64" target="_blank"><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/vSQbmixmDThrnhU4w0dnvpXumbKXJuER" alt="온오프믹스 페이지 좋아요 누르러 가즈아~!"><p>온오프믹스 페이지 좋아요 누르러 가즈아~!</p></a></div></div><div class="owl-item" style="width: 356px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/23201?url=https%3A%2F%2Fgoo.gl%2F6xAmY5" data-c="777143e65" target="_blank"><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/OhMRuhG3uJHJVfYwS7bto9FAcYeajOW0" alt="온오프믹스 [유튜브] 채널입니다~!! #좋아요 #구독 "><p>온오프믹스 [유튜브] 채널입니다~!! #좋아요 #구독 </p></a></div></div><div class="owl-item cloned" style="width: 356px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/34044?url=https%3A%2F%2Fblog.naver.com%2Fonoffmix%2F221301565171" data-c="777143e61" target="_blank"><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/A2TqGH1Yz8mnxGwBZcEDOzYTA7MONf6p" alt="[ 6터뷰 ] #6하원칙을 #60초 안에 S`Camp편"><p>[ 6터뷰 ] #6하원칙을 #60초 안에 S`Camp편</p></a></div></div><div class="owl-item cloned" style="width: 356px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33140?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F138026" data-c="777143e62" target="_blank"><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/gh6kbBW6IuaEuvJdLIKeK9LgmO68R4nF" alt="모임 활성화를 위한 '마팀이 간다 시즌2' OPEN!"><p>모임 활성화를 위한 '마팀이 간다 시즌2' OPEN!</p></a></div></div></div></div><div class="owl-controls"><div class="owl-nav" style="display: none;"><div class="owl-prev" style="">prev</div><div class="owl-next" style="">next</div></div><div class="owl-dots" style=""><div class="owl-dot active"><span></span></div><div class="owl-dot"><span></span></div><div class="owl-dot"><span></span></div><div class="owl-dot"><span></span></div><div class="owl-dot"><span></span></div></div></div></div></article><article class="rankingArea webFontDotum"><h2>실시간 모임순위</h2><ul><li><a href="https://onoffmix.com/event/142148" data-c="popular1" class="positionArea" target="_blank"><span class="number one">1</span><span class="borderArea"></span><img src="https://onoffmix.com/images/event/142148/s" alt="★ 제5회 2018 슈퍼블록스타K ★"><span class="text">★ 제5회 2018 슈퍼블록스타K ★</span><span class="rankBtn free">무료</span><span class="categoryBtn rankBtn">세미나/컨퍼런스</span></a></li><li><a href="https://onoffmix.com/event/142232" data-c="popular2" target="_blank"><span class="number">2</span><span class="text">[암호화폐 밋업] ASIA BLOCKCHAIN CORPS</span></a></li><li><a href="https://onoffmix.com/event/142238" data-c="popular3" target="_blank"><span class="number">3</span><span class="text">● 2018 열정으로 사는 인생 ● 라이프 코칭 세미나</span></a></li><li><a href="https://onoffmix.com/event/141647" data-c="popular4" target="_blank"><span class="number">4</span><span class="text">[부산마케팅협회] 지금, 당장 시작가능한 유튜브 마케팅</span></a></li><li><a href="https://onoffmix.com/event/140562" data-c="popular5" target="_blank"><span class="number">5</span><span class="text">소수정예 며느리 리더십특강</span></a></li><li><a href="https://onoffmix.com/event/129389" data-c="popular6" target="_blank"><span class="number">6</span><span class="text">이달의 시인 초청 특강</span></a></li></ul></article><article><div class="sideAdArea owl-carousel owl-theme owl-center owl-loaded"><div class="owl-stage-outer"><div class="owl-stage" style="transition: 0s; width: 1708px; transform: translate3d(-488px, 0px, 0px);"><div class="owl-item cloned" style="width: 234px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33454?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F132022" data-c="99623a602" target="_blank"><img src="https://cfile1.onoffmix.com/attach/CroXOJ6j51A5qhWwWtG96O3N8hp8Zo1F" alt="2018 4차 산업혁명 CEO 아카데미 - 제조기업의 변화와 혁신 전략! (8개 지역 전체 안내)"></a></div></div><div class="owl-item cloned" style="width: 234px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33637?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F135533" data-c="99623a603" target="_blank"><img src="https://cfile1.onoffmix.com/attach/ogTV6dGYZUpB3BGcrDUvPoayCS8Mrtvv" alt="총 지원금 1억원! CBT LAB과 함께 이베이 수출스타 되자!"></a></div></div><div class="owl-item active center" style="width: 234px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33801?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141090" data-c="99623a601" target="_blank"><img src="https://cfile1.onoffmix.com/attach/UUwLbpJW5w77TTHYSAYANgZZE7xSz3DG" alt="아이디어 융합팩토리"></a></div></div><div class="owl-item" style="width: 234px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33454?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F132022" data-c="99623a602" target="_blank"><img src="https://cfile1.onoffmix.com/attach/CroXOJ6j51A5qhWwWtG96O3N8hp8Zo1F" alt="2018 4차 산업혁명 CEO 아카데미 - 제조기업의 변화와 혁신 전략! (8개 지역 전체 안내)"></a></div></div><div class="owl-item" style="width: 234px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33637?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F135533" data-c="99623a603" target="_blank"><img src="https://cfile1.onoffmix.com/attach/ogTV6dGYZUpB3BGcrDUvPoayCS8Mrtvv" alt="총 지원금 1억원! CBT LAB과 함께 이베이 수출스타 되자!"></a></div></div><div class="owl-item cloned" style="width: 234px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33801?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141090" data-c="99623a601" target="_blank"><img src="https://cfile1.onoffmix.com/attach/UUwLbpJW5w77TTHYSAYANgZZE7xSz3DG" alt="아이디어 융합팩토리"></a></div></div><div class="owl-item cloned" style="width: 234px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33454?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F132022" data-c="99623a602" target="_blank"><img src="https://cfile1.onoffmix.com/attach/CroXOJ6j51A5qhWwWtG96O3N8hp8Zo1F" alt="2018 4차 산업혁명 CEO 아카데미 - 제조기업의 변화와 혁신 전략! (8개 지역 전체 안내)"></a></div></div></div></div><div class="owl-controls"><div class="owl-nav" style="display: none;"><div class="owl-prev" style="">prev</div><div class="owl-next" style="">next</div></div><div class="owl-dots" style=""><div class="owl-dot active"><span></span></div><div class="owl-dot"><span></span></div><div class="owl-dot"><span></span></div></div></div></div></article></section><section class="mainSection"><article class="pickUpArea"><h2 class="title graphicFont">모임 pick up</h2><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33728?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140576" data-c="aa16fe1a1" target="_blank"></a><img src="https://onoffmix.com/images/event/140576/s" alt="2018년 산업단지 공유경제 활성화 지원 2차 모집공고" original="https://onoffmix.com/images/event/140576/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">기타</span><span class="eventDate">6.4~6.24</span></li><li class="eventIntro"><p>2018년 산업단지 공유경제 활성화 지원 2차 모집공고</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33962?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140611" data-c="aa16fe1a2" target="_blank"></a><img src="https://cfile1.onoffmix.com/attach/bupGqRnOIEHrrUqOGpc8XBuxSy7vrFfu" alt="2018 BeeChat Launching Show" original="https://cfile1.onoffmix.com/attach/bupGqRnOIEHrrUqOGpc8XBuxSy7vrFfu" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">6.30 (토)</span></li><li class="eventIntro"><p>2018 BeeChat Launching Show</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33956?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140372" data-c="aa16fe1a3" target="_blank"></a><img src="https://onoffmix.com/images/event/140372/s" alt="[제5회 국제마케팅세미나] 화장품 및 생활용품 베트남 진출 전략 마케팅 방법" original="https://onoffmix.com/images/event/140372/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">6.29 (금)</span></li><li class="eventIntro"><p>[제5회 국제마케팅세미나] 화장품 및 생활용품 베트남 진출 전략 마케팅 방법</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34040?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141776" data-c="aa16fe1a4" target="_blank"></a><img src="https://onoffmix.com/images/event/141776/s" alt="[한국콘텐츠진흥원] 평창 동계올림픽 성공신화, 대형 이벤트의 콘텐츠 활용법" original="https://onoffmix.com/images/event/141776/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">6.26 (화)</span></li><li class="eventIntro"><p>[한국콘텐츠진흥원] 평창 동계올림픽 성공신화, 대형 이벤트의 콘텐츠 활용법</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33907?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141384" data-c="aa16fe1a5" target="_blank"></a><img src="https://onoffmix.com/images/event/141384/s" alt="제 6회 문화데이터 활용 경진대회" original="https://onoffmix.com/images/event/141384/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">공모전</span><span class="eventDate">5.31~8.20</span></li><li class="eventIntro"><p>제 6회 문화데이터 활용 경진대회</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33961?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141636" data-c="aa16fe1a6" target="_blank"></a><img src="https://cfile1.onoffmix.com/attach/KDEWERHm9MDdLjZaviRzfaL4AShXpUiY" alt="ThinkCoin ICO 블록체인 세미나" original="https://cfile1.onoffmix.com/attach/KDEWERHm9MDdLjZaviRzfaL4AShXpUiY" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">6.23 (토)</span></li><li class="eventIntro"><p>ThinkCoin ICO 블록체인 세미나</p></li></ul><div class="pickUpAd owl-carousel owl-theme owl-center owl-loaded"><div class="owl-stage-outer"><div class="owl-stage" style="transition: 0s; width: 3444px; transform: translate3d(-984px, 0px, 0px);"><div class="owl-item cloned" style="width: 482px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33849?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141360" data-c="adfab8f92" target="_blank"><img src="https://cfile1.onoffmix.com/attach/Jikm8PXFB18tlaIwfxM5tP1A6tHQnVqV" alt="CultureNEXT1. OPEN FORUM <문화기술, 상상을 현실로 만들어내다>"></a></div></div><div class="owl-item cloned" style="width: 482px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/34008?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141205" data-c="adfab8f93" target="_blank"><img src="https://cfile1.onoffmix.com/attach/hVyQxXY7mOpOHggq0jUHizdR98c7Vnm0" alt="[무료]제2회 창업 토크 콘서트"></a></div></div><div class="owl-item active center" style="width: 482px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/34102?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F142140" data-c="adfab8f91" target="_blank"><img src="https://cfile1.onoffmix.com/attach/NuSduRHUX5zLexcUWWRzvxkxFTGwNy30" alt="2018 제7회 한국인터넷거버넌스포럼(KrIGF)"></a></div></div><div class="owl-item" style="width: 482px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33849?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141360" data-c="adfab8f92" target="_blank"><img src="https://cfile1.onoffmix.com/attach/Jikm8PXFB18tlaIwfxM5tP1A6tHQnVqV" alt="CultureNEXT1. OPEN FORUM <문화기술, 상상을 현실로 만들어내다>"></a></div></div><div class="owl-item" style="width: 482px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/34008?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141205" data-c="adfab8f93" target="_blank"><img src="https://cfile1.onoffmix.com/attach/hVyQxXY7mOpOHggq0jUHizdR98c7Vnm0" alt="[무료]제2회 창업 토크 콘서트"></a></div></div><div class="owl-item cloned" style="width: 482px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/34102?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F142140" data-c="adfab8f91" target="_blank"><img src="https://cfile1.onoffmix.com/attach/NuSduRHUX5zLexcUWWRzvxkxFTGwNy30" alt="2018 제7회 한국인터넷거버넌스포럼(KrIGF)"></a></div></div><div class="owl-item cloned" style="width: 482px; margin-right: 10px;"><div class="item"><a href="https://onoffmix.com/cs/a/33849?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141360" data-c="adfab8f92" target="_blank"><img src="https://cfile1.onoffmix.com/attach/Jikm8PXFB18tlaIwfxM5tP1A6tHQnVqV" alt="CultureNEXT1. OPEN FORUM <문화기술, 상상을 현실로 만들어내다>"></a></div></div></div></div><div class="owl-controls"><div class="owl-nav" style="display: none;"><div class="owl-prev" style="">prev</div><div class="owl-next" style="">next</div></div><div class="owl-dots" style=""><div class="owl-dot active"><span></span></div><div class="owl-dot"><span></span></div><div class="owl-dot"><span></span></div></div></div></div></article><article class="todayEventArea"><h2 class="title graphicFont">오늘의 모임</h2><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34035?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140437" data-c="559c659b1" target="_blank"></a><img src="https://onoffmix.com/images/event/140437/s" alt="2018 여성창업경진대회[창업, 신데렐라를 찾아라!]" original="https://onoffmix.com/images/event/140437/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">공모전</span><span class="eventDate">6.30 (토)</span></li><li class="eventIntro"><p>2018 여성창업경진대회[창업, 신데렐라를 찾아라!]</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34081?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141917" data-c="559c659b2" target="_blank"></a><img src="https://onoffmix.com/images/event/141917/s" alt="[유학 설명회] 뉴질랜드유학 #나도갈래" original="https://onoffmix.com/images/event/141917/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">6.22 (금)</span></li><li class="eventIntro"><p>[유학 설명회] 뉴질랜드유학 #나도갈래</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33589?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140426" data-c="559c659b3" target="_blank"></a><img src="https://onoffmix.com/images/event/140426/s" alt="LINUX기반 High Performance Cluster Building" original="https://onoffmix.com/images/event/140426/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">교육</span><span class="eventDate">6.27~6.29</span></li><li class="eventIntro"><p>LINUX기반 High Performance Cluster Building</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34022?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141871" data-c="559c659b4" target="_blank"></a><img src="https://onoffmix.com/images/event/141871/s" alt="Carboneum ICO 블럭체인 세미나 (아이콘 ICX 파트너쉽)" original="https://onoffmix.com/images/event/141871/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">6.22 (금)</span></li><li class="eventIntro"><p>Carboneum ICO 블럭체인 세미나 (아이콘 ICX 파트너쉽)</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34052?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141354" data-c="559c659b5" target="_blank"></a><img src="https://onoffmix.com/images/event/141354/s" alt="경매의 신, 임경민의 무료 경매특강_06월 25일" original="https://onoffmix.com/images/event/141354/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">교육</span><span class="eventDate">6.25 (월)</span></li><li class="eventIntro"><p>경매의 신, 임경민의 무료 경매특강_06월 25일</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34059?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141798" data-c="559c659b6" target="_blank"></a><img src="https://onoffmix.com/images/event/141798/s" alt="2018 URBAN INNOVATION CHALLENGE: CITYPRENEURS 서울시 문제해결 워크샵" original="https://onoffmix.com/images/event/141798/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">기타</span><span class="eventDate">6.25 (월)</span></li><li class="eventIntro"><p>2018 URBAN INNOVATION CHALLENGE: CITYPRENEURS 서울시...</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33839?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141196" data-c="559c659b7" target="_blank"></a><img src="https://onoffmix.com/images/event/141196/s" alt="2018년 서울지식재산센터 IP창업Zone IP창업스쿨(2기) 모집 안내" original="https://onoffmix.com/images/event/141196/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">교육</span><span class="eventDate">7.12~7.31</span></li><li class="eventIntro"><p>2018년 서울지식재산센터 IP창업Zone IP창업스쿨(2기) 모집 안내</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34068?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F142132" data-c="559c659b8" target="_blank"></a><img src="https://cfile1.onoffmix.com/attach/oSVmxeJUBz39JQHAxwkVVUh3NeCcwTUM" alt="임대주택 공급 활성화 설명회" original="https://cfile1.onoffmix.com/attach/oSVmxeJUBz39JQHAxwkVVUh3NeCcwTUM" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">6.25~7.6</span></li><li class="eventIntro"><p>임대주택 공급 활성화 설명회</p></li></ul></article><article class="tagEventArea"><h2 class="title graphicFont">태그 모임</h2><ul class="tagList"><li><a href="https://onoffmix.com/cs/a/19696?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EC%25B0%25BD%25EC%2597%2585" data-c="97cfa04b1">#창업</a></li><li><a href="https://onoffmix.com/cs/a/19699?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523VR" data-c="97cfa04b2">#VR</a></li><li><a href="https://onoffmix.com/cs/a/19692?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EB%25AA%25A8%25EC%259E%2584" data-c="97cfa04b3">#모임</a></li><li><a href="https://onoffmix.com/cs/a/19762?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EA%25B5%2590%25EC%259C%25A1" data-c="97cfa04b4">#교육</a></li><li><a href="https://onoffmix.com/cs/a/19760?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EA%25B2%258C%25EC%259E%2584" data-c="97cfa04b5">#게임</a></li><li><a href="https://onoffmix.com/cs/a/19697?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EC%258A%25A4%25ED%2583%2580%25ED%258A%25B8%25EC%2597%2585" data-c="97cfa04b6">#스타트업</a></li><li><a href="https://onoffmix.com/cs/a/26127?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EC%25BD%2594%25EB%2594%25A9" data-c="97cfa04b7">#코딩</a></li><li><a href="https://onoffmix.com/cs/a/19759?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EC%2584%25B8%25EB%25AF%25B8%25EB%2582%2598" data-c="97cfa04b8">#세미나</a></li><li><a href="https://onoffmix.com/cs/a/19689?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EB%25AC%25B4%25EB%25A3%258C" data-c="97cfa04b9">#무료</a></li><li><a href="https://onoffmix.com/cs/a/19695?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25ED%2586%25A0%25ED%2581%25AC" data-c="97cfa04b10">#토크</a></li><li><a href="https://onoffmix.com/cs/a/20681?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EC%2597%25AC%25ED%2596%2589" data-c="97cfa04b11">#여행</a></li><li><a href="https://onoffmix.com/cs/a/19693?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EC%25B7%25A8%25EB%25AF%25B8" data-c="97cfa04b12">#취미</a></li><li><a href="https://onoffmix.com/cs/a/19687?url=http%3A%2F%2Fsearch.onoffmix.com%2Fevent%3Fs%3D%2523%25EB%25AC%25B4%25EB%25A3%258C%25EC%25B4%2588%25EB%258C%2580" data-c="97cfa04b13">#무료초대</a></li></ul><div class="tagEventList"><ul class="tagEventMenu"><li class="eventTagType"><a href="/event?s=%23%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%82%B9%20%ED%8C%8C%ED%8B%B0" class="tagType">#네트워킹 파티</a></li><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33925?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F139129" data-c="a07090971" target="_blank"></a><span class="borderArea"></span><img src="https://onoffmix.com/images/event/139129/s" alt="(6/27) 31th '젊은사업가의 밤' 스타트업 썸머 네트워킹 파티" original="https://onoffmix.com/images/event/139129/s" style="display: inline;"></li><li class="eventIntro"><p>(6/27) 31th '젊은사업가의 밤' 스타트업 썸머 네트워킹 파티</p></li></ul><ul class="tagEventMenu"><li class="eventTagType"><a href="/event?s=%23%EB%94%94%EC%9E%90%EC%9D%B8%EC%BD%98%EC%84%9C%ED%8A%B8" class="tagType">#디자인콘서트</a></li><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33928?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140766" data-c="a07090972" target="_blank"></a><span class="borderArea"></span><img src="https://onoffmix.com/images/event/140766/s" alt="[드림디자인콘서트 20회차] 내 안의 첫번째 나침반" original="https://onoffmix.com/images/event/140766/s" style="display: inline;"></li><li class="eventIntro"><p>[드림디자인콘서트 20회차] 내 안의 첫번째 나침반</p></li></ul><ul class="tagEventMenu"><li class="eventTagType"><a href="/event?s=%23%EC%9A%94%EB%A6%AC" class="tagType">#요리</a></li><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33927?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141347" data-c="a07090973" target="_blank"></a><span class="borderArea"></span><img src="https://onoffmix.com/images/event/141347/s" alt="[무드앤쿡 토크살롱 2nd] 요리와 이야기가 있는 밤에 초대합니다 :)" original="https://onoffmix.com/images/event/141347/s" style="display: inline;"></li><li class="eventIntro"><p>[무드앤쿡 토크살롱 2nd] 요리와 이야기가 있는 밤에 초대합니다 :)</p></li></ul><ul class="tagEventMenu"><li class="eventTagType"><a href="/event?s=%23%ED%8C%8C%EC%9D%B4%EC%8D%AC" class="tagType">#파이썬</a></li><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34054?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F139684" data-c="a07090974" target="_blank"></a><span class="borderArea"></span><img src="https://onoffmix.com/images/event/139684/s" alt="[저자직강] 유튜브로 단숨에 배우는 'Hello Coding 한입에 쏙 파이썬' | 김왼손의 왼손코딩" original="https://onoffmix.com/images/event/139684/s" style="display: inline;"></li><li class="eventIntro"><p>[저자직강] 유튜브로 단숨에 배우는 'Hello Coding 한입에 쏙 파이썬' |...</p></li></ul><ul class="tagEventMenu"><li class="eventTagType"><a href="/event?s=%23%EC%BA%98%EB%A6%AC%EA%B7%B8%EB%9D%BC%ED%94%BC" class="tagType">#캘리그라피</a></li><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33926?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140712" data-c="a07090975" target="_blank"></a><span class="borderArea"></span><img src="https://onoffmix.com/images/event/140712/s" alt="붓펜캘리그라피 재직자무료과정-서울 강서" original="https://onoffmix.com/images/event/140712/s" style="display: inline;"></li><li class="eventIntro"><p>붓펜캘리그라피 재직자무료과정-서울 강서</p></li></ul></div></article><article class="hotEventArea"><h2 class="title graphicFont">모임 Hot</h2><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34064?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F142049" data-c="15dbd2791" target="_blank"></a><img src="https://onoffmix.com/images/event/142049/s" alt="제2차 성남 IP-Value up 지식재산 포럼" original="https://onoffmix.com/images/event/142049/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">7.5 (목)</span></li><li class="eventIntro"><p>제2차 성남 IP-Value up 지식재산 포럼</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34069?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141365" data-c="15dbd2792" target="_blank"></a><img src="https://onoffmix.com/images/event/141365/s" alt="[2018년 5차 굿인터넷클럽 (6/26(화))]&quot;인터넷 기업의 워라밸, 그 향기를 찾아서&quot;" original="https://onoffmix.com/images/event/141365/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">6.26 (화)</span></li><li class="eventIntro"><p>[2018년 5차 굿인터넷클럽 (6/26(화))]"인터넷 기업의 워라밸, 그...</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34117?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F137423" data-c="15dbd2793" target="_blank"></a><img src="https://onoffmix.com/images/event/137423/s" alt="[한국평생교육진흥협회] 자격증 취득과정 무료 수강 쿠폰받기!" original="https://onoffmix.com/images/event/137423/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">교육</span><span class="eventDate">6.30 (토)</span></li><li class="eventIntro"><p>[한국평생교육진흥협회] 자격증 취득과정 무료 수강 쿠폰받기!</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34119?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F142140" data-c="15dbd2794" target="_blank"></a><img src="https://onoffmix.com/images/event/142140/s" alt="2018 제7회 한국인터넷거버넌스포럼(KrIGF)" original="https://onoffmix.com/images/event/142140/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">세미나/컨퍼런스</span><span class="eventDate">7.5 (목)</span></li><li class="eventIntro"><p>2018 제7회 한국인터넷거버넌스포럼(KrIGF)</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34097?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F142184" data-c="15dbd2795" target="_blank"></a><img src="https://onoffmix.com/images/event/142184/s" alt="[EBS] 생각하는 콘서트 방청안내" original="https://onoffmix.com/images/event/142184/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">방송/연예</span><span class="eventDate">6.26 (화)</span></li><li class="eventIntro"><p>[EBS] 생각하는 콘서트 방청안내</p></li></ul><ul class="eventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34029?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140111" data-c="15dbd2796" target="_blank"></a><img src="https://onoffmix.com/images/event/140111/s" alt="2018 성남 인디게임&amp;게이미피케이션 공모전 지원작 모집" original="https://onoffmix.com/images/event/140111/s" style="display: inline;"></li><li class="eventInfoWrap"><span class="infoBox free">무료</span><span class="categoryBtn infoBox">공모전</span><span class="eventDate">8.1 (수)</span></li><li class="eventIntro"><p>2018 성남 인디게임&amp;게이미피케이션 공모전 지원작 모집</p></li></ul><div class="hotEventAd"><a href="https://onoffmix.com/cs/a/34048?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141786" data-c="2929ffe11" target="_blank"><img src="https://cfile1.onoffmix.com/attach/bndkfKkHPpxPaN1Ds8w4yvfDeQMSazJC" alt="KOTRA 비즈니스클럽 4차 산업혁명 제조업 부활의 법칙 세미나"></a></div></article><article class="inviteEventArea"><div class="inviteEventSide"><span class="text webFontTahoma">ONOFFMIX BEST CHOICE</span><span class="text webFontSpoqa">이벤트에 초대합니다.</span><a href="/prom/exhibition" class="add btn">더보기</a></div><div class="inviteEventList"><ul class="inviteEventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33515?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F139938" data-c="b6cdbb0e1" target="_blank"></a><span class="borderArea"></span><img src="https://onoffmix.com/images/event/139938/s" alt="[초대이벤트] 연극 &quot;라이어 1탄&quot;" original="https://onoffmix.com/images/event/139938/s" style="display: inline;"></li><li class="eventIntro"><p>[초대이벤트] 연극 "라이어 1탄"</p></li></ul><ul class="inviteEventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33781?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140808" data-c="b6cdbb0e2" target="_blank"></a><span class="borderArea"></span><img src="https://onoffmix.com/images/event/140808/s" alt="[서평이벤트] &quot;말 한마디 때문에&quot;" original="https://onoffmix.com/images/event/140808/s" style="display: inline;"></li><li class="eventIntro"><p>[서평이벤트] "말 한마디 때문에"</p></li></ul><ul class="inviteEventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/33945?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141565" data-c="b6cdbb0e3" target="_blank"></a><span class="borderArea"></span><img src="https://onoffmix.com/images/event/141565/s" alt="[초대이벤트] 연극 &quot;우리가 아직 살아있네요&quot;" original="https://onoffmix.com/images/event/141565/s" style="display: inline;"></li><li class="eventIntro"><p>[초대이벤트] 연극 "우리가 아직 살아있네요"</p></li></ul><ul class="inviteEventMenu"><li class="eventImgWrap"><a href="https://onoffmix.com/cs/a/34055?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F136600" data-c="b6cdbb0e4" target="_blank"></a><span class="borderArea"></span><img src="https://cfile1.onoffmix.com/attach/5X7nuOGoZ3LDbEBOleGgryNVTfOlleqV" alt="2018 블록체인 오픈 포럼" original="https://cfile1.onoffmix.com/attach/5X7nuOGoZ3LDbEBOleGgryNVTfOlleqV" style="display: inline;"></li><li class="eventIntro"><p>2018 블록체인 오픈 포럼</p></li></ul></div></article><article class="hotIssueArea"><h2 class="title graphicFont">Hot Issue</h2><div class="hotIssueWrap"><ul class="hotIssueMenu"><li class="issueTitle">15개의 <span>찜</span>을 받은 모임</li><li class="hotIssueContent"><a href="https://onoffmix.com/event/142015" data-c="hotpin1" target="_blank"><ul><li class="eventImgWrap"><span class="borderArea"></span><img src="https://onoffmix.com/images/event/142015/s" alt="어린이 운동지능 발달" original="https://onoffmix.com/images/event/142015/s" style="display: inline;"></li><li class="eventIntro"><p>어린이 운동지능 발달</p></li></ul></a></li></ul><ul class="hotIssueMenu"><li class="issueTitle">4개의 <span>댓글</span>을 받은 모임</li><li class="hotIssueContent"><a href="https://onoffmix.com/event/140665" data-c="hotcomment2" target="_blank"><ul><li class="eventImgWrap"><span class="borderArea"></span><img src="https://onoffmix.com/images/event/140665/s" alt="\경북 게임 콘텐츠 산업 전문 인력 역량 강화 교육생 모집" original="https://onoffmix.com/images/event/140665/s" style="display: inline;"></li><li class="eventIntro"><p>\경북 게임 콘텐츠 산업 전문 인력 역량 강화 교육생 모집</p></li></ul></a></li></ul><ul class="hotIssueMenu"><li class="issueTitle">304명의 <span>신청</span>을 받은 모임</li><li class="hotIssueContent"><a href="https://onoffmix.com/event/139922" data-c="hotparticipant3" target="_blank"><ul><li class="eventImgWrap"><span class="borderArea"></span><img src="https://onoffmix.com/images/event/139922/s" alt="대한민국의 모든 스타트업 관계자들을 위한 고벤처포럼 6월 모임" original="https://onoffmix.com/images/event/139922/s" style="display: inline;"></li><li class="eventIntro"><p>대한민국의 모든 스타트업 관계자들을 위한 고벤처포럼 6월 모임</p></li></ul></a></li></ul><div class="hotIssueAd"><a href="https://onoffmix.com/cs/a/34070?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F140840" data-c="hotissue1" target="_blank"><img src="https://cfile1.onoffmix.com/attach/Q9HSuzS72M2yMuCxpGGxvzOL55j9xR6o" alt="[생각코딩 체험과정]복잡한 생각을 코딩해드립니다.(6/23, 6/27)"></a></div></div></article><article class="botBannerArea"><ul class="bottomWrap"><li><a href="https://onoffmix.com/cs/a/34080?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141287" data-c="bottom1" target="_blank"><img src="https://cfile1.onoffmix.com/attach/XPszHqU1cfJnLpaSm1s1AIVCfnuZZLMP" alt="Advance 6 in Seoul [어드밴스 6 in 서울]"></a></li><li><a href="https://onoffmix.com/cs/a/33947?url=https%3A%2F%2Fonoffmix.com%2Fevent%2F141565" data-c="bottom2" target="_blank"><img src="https://cfile1.onoffmix.com/attach/PCwDhiXGP1s7HEcfXcDSCuiXnFPy3xLU" alt="[초대이벤트] 연극 &quot;우리가 아직 살아있네요&quot;"></a></li></ul></article><footer class="guideArea"><ul class="guideWrap"><li><a href="https://onoffmix.com/cs/a/19462?url=http%3A%2F%2Fonoffmix.com%2Fcs%2Ffaq%2Fplace%23110" data-c="guide1"><img src="https://cfile1.onoffmix.com/attach/mUF25Lns6KcOoNwC9vokuWlqjowjbN6s" alt="null"></a></li><li><a href="https://onoffmix.com/cs/a/19466?url=http%3A%2F%2Fonoffmix.com%2Fservice%2Fadvert%2Fpartner%2Fcircleconnection" data-c="guide2"><img src="https://cfile1.onoffmix.com/attach/quHSlMK7lanAotJJrYSQemfNpyvYD1VU" alt="null"></a></li><li><a href="https://onoffmix.com/cs/a/19468?url=http%3A%2F%2Fwww.onoffmix.com%2Fservice%2Fadvert%2Fpartner%2Fgifticon" data-c="guide3"><img src="https://cfile1.onoffmix.com/attach/j84QVeWSH6Vujuj6NO6otvlO5h07trfv" alt="null"></a></li><li><a href="https://onoffmix.com/cs/a/19470?url=http%3A%2F%2Fonoffmix.com%2Fservice%2Fadvert%2Fprocedures%2F" data-c="guide4"><img src="https://cfile1.onoffmix.com/attach/vUYwfQOiipm8u3jBxMpswR9q2jEIiEAR" alt="null"></a></li></ul><ul class="noticeWrap webFontDotum"><li><strong>알려드립니다</strong><a href="https://onoffmix.com/cs/a/30911?url=https%3A%2F%2Fonoffmix.com%2Fcs%2Fnotice%2F372" data-c="300772241">[공지] 온오프믹스 사칭 이메일 관련 안내</a></li><li><strong>온오프믹스 스토리</strong><a href="https://onoffmix.com/cs/a/20270?url=http%3A%2F%2Fblog.naver.com%2Fonoffmix%2F220980288434" data-c="4a7ced541" target="_blank">온오프믹스 모임 개설하는 팁입니다.</a></li></ul></footer></section><div class="wingWrapper"><div class="wing"><div class="wingTop"><ul class="wingMenu"><li class="eventAddBtn"><a href="/event/add">모임개설하기</a></li><li><a href="/account/event/involved">신청내역</a></li><li><a href="/account/pin">찜내역</a></li></ul></div><div class="wingMiddle"><dl><dt>오늘 본 기록</dt><dd class="pos"><a href="https://onoffmix.com/event/139874" target="_blank"><span class="borderArea"></span><img src="https://onoffmix.com/images/event/139874/s" width="68" height="68" alt="CENTAP 크라우드펀딩 연계 지원사업 'Real Crowd Funding Program'" data-link="https://onoffmix.com/event/139874" data-title="CENTAP 크라우드펀딩 연계 지원사업 'Real Crowd Funding Program'" data-personnel="0" data-showprogress="n"></a></dd><dd class="pos"></dd><dd class="pagingArea"><p class="leftArrow"><a class="arrow preview">Left</a></p><p class="paging"><strong class="pageNow">1</strong>/<span class="number pageTotal">1</span></p><p class="rightArrow"><a class="arrow next">Right</a></p></dd></dl></div><script type="text/x-query-tmpl" class="wingEventBox"><a href="${link}" target="_blank"><span class="borderArea"></span><img src="${image}" width="68" height="68" alt="${comment}" data-link="${link}" data-title="${comment}" data-personnel="${additional}" data-showprogress="${isShowProgress}"></a></script><script type="text/x-query-tmpl" class="wingMarketBox"><a href="${link}" target="_blank"><span class="borderArea"></span><img src="${image}" width="68" height="68" alt="${comment}" data-link="${link}" data-title="${comment}" data-price="${additional}"></a></script><script type="text/x-query-tmpl" class="wingPlaceBox"><a href="${link}" target="_blank"><span class="borderArea"></span><img src="${image}" width="68" height="68" alt="${comment}" data-link="${link}" data-title="${comment}" data-recperson="${additional}"></a></script><script type="text/x-query-tmpl" class="wingMarket"><ul><li class="title"><a href="#" target="_blank"></a></li><li class="price"><strong></strong> 원</li></ul></script><script type="text/x-query-tmpl" class="wingPlace"><ul><li class="title"><a href="#" target="_blank"></a></li><li class="recperson"><strong></strong> 명 수용가능</li></ul></script><div class="wingBanner"><ul><li><a href="https://onoffmix.com/cs/a/19432?url=http%3A%2F%2Fwww.onoffmix.com%2Fprom%2Fexhibition" data-c="afc8f73f1" target="_blank"><p class="positionArea"><span class="borderBox"></span><img src="https://cfile1.onoffmix.com/attach/GxOJGE1qe7ICm8sE7owF1RDvM6zpPUtP" width="90" height="130"></p></a></li><li><a href="https://onoffmix.com/cs/a/19719?url=http%3A%2F%2Fonoffmix.com%2Fservice%2Fadvert%2Fpartner%2Fgifticon" data-c="afc8f73f2" target="_blank"><p class="positionArea"><span class="borderBox"></span><img src="https://cfile1.onoffmix.com/attach/6JS679Nvor34EuI6reQu276WfWS2JaPV" width="90" height="130"></p></a></li></ul></div></div></div></section><div class="footer">
+	<div class="centerFooter">
+				<div class="informations">
+			<div class="linkArea">
+				<p class="link">
+					<a class="first link" href="http://corp.onoffmix.com/" target="_blank">회사소개</a>
+					<span class="separator">|</span>
+					<a class="link" href="/legal/agreement" target="_blank">서비스약관 및 정책</a>
+					<span class="separator">|</span>
+					<a class="link" href="/legal/privacy" target="_blank"><b>개인정보취급방침</b></a>
+					<span class="separator">|</span>
+					<a class="link" href="/service/advert/procedures/" target="_blank">광고문의</a>
+					<span class="separator">|</span>
+					<a class="link" href="http://onoffmix.com/ir/" target="_blank">투자정보</a>
+					<span class="separator">|</span>
+					<a class="link" href="/cs/inquire/" target="_blank">문의하기</a>
+					<span class="separator">|</span>
+					<a class="link" href="/cs/suggest/" target="_blank">제안하기</a>
+					<span class="separator">|</span>
+					<a class="link" href="/cs/" target="_blank">고객센터</a>
+				</p>
+			</div>
+			<div class="info">
+				<strong>(주) 온오프믹스</strong> <!--em>대표 양준철</em-->
+			</div>
+			<div class="detail">
+				<em>대표이사 양준철</em>
+				<span class="separator">|</span>
+				<div class="officer">개인정보관리책임자 주일택</div>
+				<span class="separator">|</span>
+				<div class="code">사업자등록번호 <span class="number">221-81-34988</span></div>
+				<span class="separator">|</span>
+				<div class="business">통신판매업 신고번호 제<span class="number">2015</span>-서울서초-<span class="number">0928</span>호</div>
+			</div>
+			<div class="contact">
+				<div class="address">
+					<address>서울특별시 서초구 강남대로 <span class="letNumber">79</span>길 <span class="letNumber">59</span> 새로나빌딩 <span class="letNumber">3</span>층</address>
+				</div>
+			</div>
+			<div class="contact">
+				<span class="separator">|</span>
+				<span class="label">Tel</span> <span class="number">02-6080-5579</span>
+				<span class="separator">|</span>
+				<span class="label">Fax</span> <span class="number">02-6280-8089</span>
+				<span class="separator">|</span>
+				<span class="label">Email</span> : <a class="email" href="mailto:webmaster@onoffmix.com">webmaster@onoffmix.com</a>
+			</div>
+			<p class="bottom">
+				<span>온오프믹스는 통신판매중개자이며 모임에 대한 당사자 및 주최자가 아닙니다. 따라서 온오프믹스는 등록된 모임에 대하여 책임을 지지 않습니다.</span>
+				copyright © <strong>ONOFFMIX.COM</strong>, All Rights Reserved.
+			</p>
+		</div>
+	</div>
+</div><!-- .footer end -->
+	<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-TMSKZ8"
+	                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+		})(window,document,'script','dataLayer','GTM-TMSKZ8');</script>
+<script type="text/javascript" src="https://static.onoffmix.com/js3/logger/gnb.js"></script>
+
+<script type="text/javascript" src="https://t.onoffmix.com/t.js?r=https%3A%2F%2Fonoffmix.com%2Fevent%2F139874" async=""></script>
+<noscript><img src="https://t.onoffmix.com/t.gif?r=https%3A%2F%2Fonoffmix.com%2Fevent%2F139874" width="0" height="0" alt="" /></noscript>
+
+
+
+<!-- 206 -->
+<div id="fancybox-tmp"></div><div id="fancybox-loading"><div></div></div><div id="fancybox-overlay"></div><div id="fancybox-wrap"><div id="fancybox-outer"><div class="fancybox-bg" id="fancybox-bg-n"></div><div class="fancybox-bg" id="fancybox-bg-ne"></div><div class="fancybox-bg" id="fancybox-bg-e"></div><div class="fancybox-bg" id="fancybox-bg-se"></div><div class="fancybox-bg" id="fancybox-bg-s"></div><div class="fancybox-bg" id="fancybox-bg-sw"></div><div class="fancybox-bg" id="fancybox-bg-w"></div><div class="fancybox-bg" id="fancybox-bg-nw"></div><div id="fancybox-content"></div><a id="fancybox-close"></a><div id="fancybox-title"></div><a href="javascript:;" id="fancybox-left"><span class="fancy-ico" id="fancybox-left-ico"></span></a><a href="javascript:;" id="fancybox-right"><span class="fancy-ico" id="fancybox-right-ico"></span></a></div></div>
+<script type="text/javascript" id="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","926169894172122");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=926169894172122&amp;ev=PageView&amp;noscript=1"></noscript>
+ 
+<script type="text/javascript" id="" src="https://wcs.naver.net/wcslog.js"></script> 
+<script type="text/javascript" id="">if(!wcs_add)var wcs_add={};wcs_add.wa="s_428701994036";if(!_nasa)var _nasa={};wcs.inflow();wcs_do(_nasa);</script>
+</body>
